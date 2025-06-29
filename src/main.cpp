@@ -94,6 +94,7 @@ int main() {
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
                           (void*)0);
     glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
 
     // Shader Setup
     Shader bird_shader("../src/shaders/vs/2d_simple.vert",
@@ -113,19 +114,39 @@ int main() {
     // Border Stand-In Circle
     CircleMesh square = Circle::get_circle(4);
 
-    // Obstacles
+    std::vector<std::array<glm::vec3, 2>> point_pairs = {
+        {glm::vec3(-60.0f, 60.0f, 0.0f), glm::vec3(60.0f, 60.0f, 0.0f)},    // T
+        {glm::vec3(-60.0f, -60.0f, 0.0f), glm::vec3(60.0f, -60.0f, 0.0f)},  // B
+        {glm::vec3(-60.0f, 60.0f, 0.0f), glm::vec3(-60.0f, -60.0f, 0.0f)},  // L
+        {glm::vec3(60.0f, 60.0f, 0.0f), glm::vec3(60.0f, -60.0f, 0.0f)}};   // R
+
+    // turn pairs into rendered lines
+    std::vector<float> border_vertices;
+    for (auto const& pair : point_pairs) {
+        border_vertices.push_back(pair[0].x);
+        border_vertices.push_back(pair[0].y);
+        border_vertices.push_back(pair[0].z);
+        border_vertices.push_back(pair[1].x);
+        border_vertices.push_back(pair[1].y);
+        border_vertices.push_back(pair[1].z);
+    }
+    unsigned int border_VAO, border_VBO;
+    glGenVertexArrays(1, &border_VAO);
+    glBindVertexArray(border_VAO);
+
+    glGenBuffers(1, &border_VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, border_VBO);
+    glBufferData(GL_ARRAY_BUFFER, border_vertices.size() * sizeof(float),
+                 border_vertices.data(), GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+                          (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
+
+    // Obstacle points
     {
         ivec3_hashset seen_points;
         std::vector<glm::vec3> obstacles;
-        std::vector<std::array<glm::vec3, 2>> point_pairs = {
-            {glm::vec3(-60.0f, 60.0f, 0.0f),
-             glm::vec3(60.0f, 60.0f, 0.0f)},  // T
-            {glm::vec3(-60.0f, -60.0f, 0.0f),
-             glm::vec3(60.0f, -60.0f, 0.0f)},  // B
-            {glm::vec3(-60.0f, 60.0f, 0.0f),
-             glm::vec3(-60.0f, -60.0f, 0.0f)},  // L
-            {glm::vec3(60.0f, 60.0f, 0.0f),
-             glm::vec3(60.0f, -60.0f, 0.0f)}};  // R
         for (const auto& pairs : point_pairs) {
             std::vector<glm::vec3> new_points =
                 gen_points(pairs[0], pairs[1], seen_points);
@@ -135,12 +156,11 @@ int main() {
         BirdSimSettings::instance().obstacles = std::move(obstacles);
     }
 
-    // make sure viewport is ok
+    // make sure viewport is scaled correctly
     glfwGetFramebufferSize(window, &WinData::instance().width,
                            &WinData::instance().height);
     update_aspect();
 
-    // glEnable(GL_DEPTH_TEST);
     Camera camera;
     float last_time = glfwGetTime();
     float fps_clock = 0.0f;
@@ -244,18 +264,19 @@ int main() {
             }
         }
 
+        // Draw obstacles
+        bird_shader.set_mat4("model", get_transform_mat(glm::vec3(0.0f)));
+        bird_shader.set_vec3("color", glm::vec3(0.2f));
+        glBindVertexArray(border_VAO);
+        glLineWidth(10.0f);
+        glDrawArrays(GL_LINES, 0, 8);
+
         // Draw cursor circle
         glm::vec2 pos = get_cursor_world_pos();
         bird_shader.set_mat4("model",
                              get_transform_mat(glm::vec3(pos.x, pos.y, 0.0f)));
+        bird_shader.set_vec3("color", glm::vec3(0.2f));
         circle.draw();
-
-        // Draw obstacles
-        bird_shader.set_vec3("color", glm::vec3(0.1f));
-        for (const auto& pos : BirdSimSettings::instance().obstacles) {
-            bird_shader.set_mat4("model", get_transform_mat(pos));
-            square.draw();
-        }
 
         // IMGUI RENDER
         ImGui::Render();
