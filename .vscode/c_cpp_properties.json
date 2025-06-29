@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/imgui/**",
+                "${workspaceFolder}/include",
+                "/opt/homebrew/include",
+                "${workspaceFolder}/imgui/backends"
+            ],
+            "defines": [],
+            "cStandard": "c17"
+        }
+    ],
+    "version": 4
+}

@@ -1,0 +1,7 @@
+/Users/admin/c_projects/boid/build/CMakeFiles/glad.dir
+/Users/admin/c_projects/boid/build/CMakeFiles/boids.dir
+/Users/admin/c_projects/boid/build/CMakeFiles/edit_cache.dir
+/Users/admin/c_projects/boid/build/CMakeFiles/rebuild_cache.dir
+/Users/admin/c_projects/boid/build/imgui/CMakeFiles/imgui.dir
+/Users/admin/c_projects/boid/build/imgui/CMakeFiles/edit_cache.dir
+/Users/admin/c_projects/boid/build/imgui/CMakeFiles/rebuild_cache.dir

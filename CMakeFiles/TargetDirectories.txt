@@ -1,0 +1,4 @@
+/Users/admin/c_projects/boid/CMakeFiles/boids.dir
+/Users/admin/c_projects/boid/CMakeFiles/glad.dir
+/Users/admin/c_projects/boid/CMakeFiles/edit_cache.dir
+/Users/admin/c_projects/boid/CMakeFiles/rebuild_cache.dir

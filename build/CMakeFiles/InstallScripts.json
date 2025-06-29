@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/admin/c_projects/boid/build/cmake_install.cmake",
+		"/Users/admin/c_projects/boid/build/imgui/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
